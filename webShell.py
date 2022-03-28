@@ -49,8 +49,6 @@ username = "admin"
 password = "admin@123"
 enableAuth = True
 
-print __file__.split("/")[-1]
-
 def sizeof_fmt(num):
     for x in ['bytes','KB','MB','GB']:
         if num < 1024.0:
@@ -506,6 +504,9 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         currentLength = len(os.getcwd())
         num = 0
         for fullName in fileList:
+            if fullName == __file__ or fullName == self.translate_path("/webShellConfig.ini"):
+                num = num + 1
+                continue
             if fullName == '..':
                 out = out + '\t<table><tr><td width="50%"><a href="../">..</a></td><td width="10%"></td><td width="20%"></td><td width="20%"></td></tr></table>\n'
                 continue
@@ -515,10 +516,29 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 colorName = "#FFBFFF"
             if os.path.islink(fullName):
                 colorName = "#FFBFFF"
-            out = out + '\t<table><tr><td width="50%" id="fileTableTd_{}"><a href="{}" id="fileTable_a_{}" style="background-color:{}">{}</a></td><td width="10%"><select id="fileTableSelect_{}" onchange="selectChange(\'{}\')"><option value="">操作</option><option value="delete">删除</option><option value="rename">重命名</option><option value="unzip">解压</option><option value="zip">压缩</option><option value="mv">移动到</option><option value="co">复制到</option><option value="edit">编辑</option><option value="video">播放视频</option><option value="audio">播放音频</option></select></td><td width="20%">{}</td><td width="20%">{}</td></tr></table>\n'.format(
-                    num,urllib.quote(fileName), num,colorName,fileName,num,num,
+            out = out + '\t<table><tr><td width="50%" id="fileTableTd_{}"><a href="{}" id="fileTable_a_{}" style="background-color:{}">{}</a></td><td width="10%">{}</td><td width="20%">{}</td><td width="20%">{}</td></tr></table>\n'.format(
+                    num,urllib.quote(fileName), num,colorName,fileName,self.getSelectHtml(num,fullName),
                         sizeof_fmt(os.path.getsize(fullName)), modification_date(fullName))
             num = num + 1
+        return out
+    def getSelectHtml(self,num,fullName):
+        out = '<select id="fileTableSelect_%s" onchange="selectChange(\'%s\')">' % (num, num)
+        out = out + '<option value="">操作</option>'
+        out = out + '<option value="delete">删除</option>'
+        out = out + '<option value="rename">重命名</option>'
+        out = out + '<option value="mv">移动到</option>'
+        out = out + '<option value="cp">复制到</option>'
+        out = out + '<option value="zip">压缩</option>'
+        if fullName.endswith(".tar") or fullName.endswith(".tar.gz") or fullName.endswith(".zip"):
+            out = out + '<option value="unzip">解压</option>'
+        if fullName.endswith(".mp3"):
+            out = out + '<option value="audio">播放</option>'
+        if fullName.endswith(".mp4"):
+            out = out + '<option value="video">播放</option>'
+        if (not os.path.isdir(fullName)) and (os.path.getsize(fullName) < 1024 * 1024) and (fullName.endswith(".txt") or fullName.endswith(".ini") or fullName.endswith(".log") or fullName.endswith(".js") 
+        or fullName.endswith(".html") or fullName.endswith(".java") or fullName.endswith(".csv") or fullName.endswith(".ftl")):
+            out = out + '<option value="edit">编辑</option>'
+        out = out + '</select>'
         return out
     def list_directory(self,path):  
         res = []
