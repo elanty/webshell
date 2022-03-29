@@ -555,7 +555,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             if os.path.islink(fullName):
                 colorName = "#FFBFFF"
             if isSearch:
-                fileName = fullName[len(self.translate_path(self.path[5])) + 1:]      
+                fileName = fullName[len(self.translate_path(self.path[5:])) + 1:]      
             out = out + '\t<table><tr><td width="50%" id="fileTableTd_{}"><a href="{}" id="fileTable_a_{}" style="background:{}">{}</a></td><td width="10%">{}</td><td width="20%">{}</td><td width="20%">{}</td></tr></table>\n'.format(
                     num,urllib.quote(fileName), num,colorName,fileName,self.getSelectHtml(num,fullName),
                         sizeof_fmt(os.path.getsize(fullName)), modification_date(fullName))
