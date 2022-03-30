@@ -221,6 +221,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header("Transfer-Encoding", "chunked")
         self.end_headers()
         self.protocol_version="HTTP/1.1"
+        self.wfile.writelines("运行中...请稍后" + " " * 1024)
         while 1:
             buf = status.readline()
             if not buf:
@@ -442,6 +443,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header("Transfer-Encoding", "chunked")
         self.end_headers()
         self.protocol_version="HTTP/1.1"
+        self.wfile.writelines("运行中...请稍后" + " " * 1024)
         while 1:
             buf = status.readline()
             if not buf:
@@ -465,6 +467,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header("Transfer-Encoding", "chunked")
         self.end_headers()
         self.protocol_version="HTTP/1.1"
+        self.wfile.writelines("运行中...请稍后" + " " * 1024)
         while 1:
             buf = status.readline()
             if not buf:
